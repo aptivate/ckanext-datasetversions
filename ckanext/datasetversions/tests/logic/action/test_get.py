@@ -1,27 +1,13 @@
-import nose.tools
-
 import ckan.tests.helpers as helpers
 
-import ckan.plugins as plugins
-
-assert_equals = nose.tools.assert_equals
-assert_true = nose.tools.assert_true
-assert_regexp_matches = nose.tools.assert_regexp_matches
-
-
-class GetTestBase(helpers.FunctionalTestBase):
-    @classmethod
-    def setup_class(cls):
-        super(GetTestBase, cls).setup_class()
-        plugins.load('datasetversions')
-
-    @classmethod
-    def teardown_class(cls):
-        plugins.unload('datasetversions')
-        super(GetTestBase, cls).teardown_class()
+from ckanext.datasetversions.tests.helpers import (
+    assert_equals,
+    assert_true,
+    TestBase,
+)
 
 
-class TestPackageShow(GetTestBase):
+class TestPackageShow(TestBase):
     def setup(self):
         super(TestPackageShow, self).setup()
 
@@ -39,9 +25,9 @@ class TestPackageShow(GetTestBase):
                                                'value': '1'}])
 
         self.v10 = helpers.call_action('package_create',
-                                      name='ma001-1-10',
-                                      extras=[{'key': 'versionNumber',
-                                               'value': '10'}])
+                                       name='ma001-1-10',
+                                       extras=[{'key': 'versionNumber',
+                                                'value': '10'}])
 
         helpers.call_action('package_relationship_create',
                             subject=self.v10['id'],

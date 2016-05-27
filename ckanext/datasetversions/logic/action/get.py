@@ -1,11 +1,11 @@
 from ckan.plugins import toolkit
 
 import ckan.logic as logic
-from ckan.logic.action.get import package_show as ckan_package_show
+from ckan.logic.action.get import package_show as base_package_show
 
 
 def package_show(context, data_dict):
-    this_dataset = ckan_package_show(context, data_dict)
+    this_dataset = base_package_show(context, data_dict)
 
     versions = []
 
@@ -72,7 +72,7 @@ def _get_ordered_dataset_versions(context, data_dict, child_names):
 
     for name in child_names:
         data_dict['id'] = name
-        versions.append(ckan_package_show(context, data_dict))
+        versions.append(base_package_show(context, data_dict))
 
     versions.sort(key=_get_version, reverse=True)
 
