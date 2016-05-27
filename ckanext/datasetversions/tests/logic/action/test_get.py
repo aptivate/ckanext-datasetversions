@@ -11,38 +11,35 @@ class TestPackageShow(TestBase):
     def setup(self):
         super(TestPackageShow, self).setup()
 
-        self.parent = helpers.call_action('package_create',
-                                          name='ma001-1')
-
         self.v2 = helpers.call_action('package_create',
-                                      name='ma001-1-2',
+                                      name='189-ma001-2',
                                       extras=[{'key': 'versionNumber',
                                                'value': '2'}])
 
         self.v1 = helpers.call_action('package_create',
-                                      name='ma001-1-1',
+                                      name='189-ma001-1',
                                       extras=[{'key': 'versionNumber',
                                                'value': '1'}])
 
         self.v10 = helpers.call_action('package_create',
-                                       name='ma001-1-10',
+                                       name='189-ma001-10',
                                        extras=[{'key': 'versionNumber',
                                                 'value': '10'}])
 
-        helpers.call_action('package_relationship_create',
-                            subject=self.v10['id'],
-                            type='child_of',
-                            object=self.parent['id'])
+        helpers.call_action('dataset_version_create',
+                            id=self.v10['id'],
+                            base_name='189-ma001')
 
-        helpers.call_action('package_relationship_create',
-                            subject=self.v1['id'],
-                            type='child_of',
-                            object=self.parent['id'])
+        helpers.call_action('dataset_version_create',
+                            id=self.v1['id'],
+                            base_name='189-ma001')
 
-        helpers.call_action('package_relationship_create',
-                            subject=self.v2['id'],
-                            type='child_of',
-                            object=self.parent['id'])
+        helpers.call_action('dataset_version_create',
+                            id=self.v2['id'],
+                            base_name='189-ma001')
+
+        self.parent = helpers.call_action('base_package_show',
+                                          id='189-ma001')
 
     def test_latest_version_displayed_when_showing_parent(self):
         dataset = helpers.call_action('package_show',
