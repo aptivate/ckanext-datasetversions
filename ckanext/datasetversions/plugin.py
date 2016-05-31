@@ -3,11 +3,13 @@ import ckan.plugins.toolkit as toolkit
 
 import ckanext.datasetversions.logic.action.create
 import ckanext.datasetversions.logic.action.get
+import ckanext.datasetversions.helpers as helpers
 
 
 class DatasetversionsPlugin(plugins.SingletonPlugin):
     plugins.implements(plugins.IActions)
     plugins.implements(plugins.IConfigurer)
+    plugins.implements(plugins.ITemplateHelpers)
 
     # IActions
     def get_actions(self):
@@ -26,3 +28,7 @@ class DatasetversionsPlugin(plugins.SingletonPlugin):
         toolkit.add_template_directory(config_, 'templates')
         toolkit.add_public_directory(config_, 'public')
         toolkit.add_resource('fanstatic', 'datasetversions')
+
+    # ITemplateHelpers
+    def get_helpers(self):
+        return {'datasetversions_list': helpers.list}

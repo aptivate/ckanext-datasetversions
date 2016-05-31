@@ -57,17 +57,21 @@ class TestPackageShow(TestBase):
         dataset = helpers.call_action('package_show',
                                       id=self.parent['id'])
 
-        assert_equals(dataset['versions'], [self.v10['name'],
-                                            self.v2['name'],
-                                            self.v1['name']])
+        extras_dict = {e['key']: e['value'] for e in dataset['extras']}
+
+        assert_equals(extras_dict['versions'], [self.v10['name'],
+                                                self.v2['name'],
+                                                self.v1['name']])
 
     def test_other_versions_displayed_when_showing_child(self):
         dataset = helpers.call_action('package_show',
                                       id=self.v2['id'])
 
-        assert_equals(dataset['versions'], [self.v10['name'],
-                                            self.v2['name'],
-                                            self.v1['name']])
+        extras_dict = {e['key']: e['value'] for e in dataset['extras']}
+
+        assert_equals(extras_dict['versions'], [self.v10['name'],
+                                                self.v2['name'],
+                                                self.v1['name']])
 
     def test_tracking_summary_returned_for_parent(self):
         dataset = helpers.call_action('package_show',
@@ -75,3 +79,57 @@ class TestPackageShow(TestBase):
                                       include_tracking=True)
 
         assert_true('tracking_summary' in dataset)
+
+    def test_versions_dont_accumulate(self):
+        helpers.call_action('dataset_version_create',
+                            id=self.v1['id'],
+                            base_name='189-ma001')
+
+        helpers.call_action('dataset_version_create',
+                            id=self.v2['id'],
+                            base_name='189-ma001')
+
+        helpers.call_action('dataset_version_create',
+                            id=self.v10['id'],
+                            base_name='189-ma001')
+
+        [rel_10] = helpers.call_action(
+            'package_relationships_list',
+            id=self.v10['id'],
+            rel='child_of')
+
+        assert_equals(rel_10['subject'], '189-ma001-10')
+        assert_equals(rel_10['type'], 'child_of')
+        assert_equals(rel_10['object'], '189-ma001')
+
+        dataset_dict = helpers.call_action('package_show',
+                                           id='189-ma001')
+
+        # TODO: Looks like a bug?
+        del dataset_dict['relationships_as_subject']
+        del dataset_dict['relationships_as_object']
+
+        updated_dict = helpers.call_action('package_update',
+                                           **dataset_dict)
+
+        # Tests the above bug
+        [rel_10] = helpers.call_action(
+            'package_relationships_list',
+            id=self.v10['id'],
+            rel='child_of')
+
+        assert_equals(rel_10['subject'], '189-ma001-10')
+        assert_equals(rel_10['type'], 'child_of')
+        assert_equals(rel_10['object'], '189-ma001')
+
+        extras_dict = {e['key']: e['value'] for e in updated_dict['extras']}
+
+        assert_true('versions' in extras_dict)
+
+        # Versions would appear twice here if they accumulated, or they would
+        # if the validators didn't complain
+        assert_equals(extras_dict['versions'], [
+            self.v10['name'],
+            self.v2['name'],
+            self.v1['name'],
+        ])

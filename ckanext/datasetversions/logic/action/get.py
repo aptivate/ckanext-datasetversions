@@ -30,7 +30,17 @@ def package_show(context, data_dict):
             versions = _get_ordered_dataset_versions(context, data_dict,
                                                      child_names)
 
-    version_to_display['versions'] = [v['name'] for v in versions]
+    extras = version_to_display['extras']
+    new_extras = []
+
+    for e in extras:
+        if e['key'] != 'versions':
+            new_extras.append(e)
+
+    new_extras.append(
+        {'key': 'versions', 'value': [v['name'] for v in versions]})
+
+    version_to_display['extras'] = new_extras
 
     return version_to_display
 
