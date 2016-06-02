@@ -6,6 +6,7 @@ from ckan.logic.action.get import package_show as base_package_show
 
 def package_show(context, data_dict):
     this_dataset = base_package_show(context, data_dict)
+    version_to_display = this_dataset
 
     versions = []
 
@@ -15,12 +16,11 @@ def package_show(context, data_dict):
         versions = _get_ordered_dataset_versions(context, data_dict,
                                                  child_names)
 
-        # Show the most recent
-        version_to_display = versions[0]
+        # Show the most recent, public active one
+        if len(versions) > 0:
+            version_to_display = versions[0]
     else:
         # No children so we must be looking at a particular version
-        version_to_display = this_dataset
-
         # To get all the versions, we first need the parent
         parent_names = _get_parent_dataset_names(context, this_dataset['id'])
 
