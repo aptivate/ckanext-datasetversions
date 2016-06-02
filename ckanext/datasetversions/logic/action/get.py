@@ -85,7 +85,7 @@ def _get_ordered_active_dataset_versions(context, data_dict, child_names):
     for name in child_names:
         data_dict['id'] = name
         version = base_package_show(context, data_dict)
-        if version['state'] == 'active':
+        if version['state'] == 'active' and not version['private']:
             versions.append(version)
 
     versions.sort(key=_get_version, reverse=True)

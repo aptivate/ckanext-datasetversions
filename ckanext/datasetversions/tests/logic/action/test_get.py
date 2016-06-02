@@ -1,4 +1,5 @@
 import ckan.tests.helpers as helpers
+import ckan.tests.factories as factories
 
 from ckanext.datasetversions.tests.helpers import (
     assert_equals,
@@ -132,6 +133,28 @@ class TestPackageShow(TestBase):
         extras_dict = {e['key']: e['value'] for e in dataset['extras']}
 
         assert_true(self.v2['name'] not in extras_dict['versions'])
+
+    def test_versions_do_not_include_private_items(self):
+        user = factories.User()
+        organization = factories.Organization(user=user)
+
+        v12 = helpers.call_action('package_create',
+                                  context={'user': user['id']},
+                                  name='189-ma001-12',
+                                  private=True,
+                                  owner_org=organization['id'],
+                                  extras=[{'key': 'versionNumber',
+                                           'value': '12'}])
+        helpers.call_action('dataset_version_create',
+                            id=v12['id'],
+                            base_name='189-ma001')
+
+        dataset = helpers.call_action('package_show',
+                                      id=self.parent['id'])
+
+        extras_dict = {e['key']: e['value'] for e in dataset['extras']}
+
+        assert_true(v12['name'] not in extras_dict['versions'])
 
     def test_versions_empty_if_all_deleted(self):
         helpers.call_action('package_delete',
