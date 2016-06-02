@@ -8,7 +8,7 @@ class TestHelpers(unittest.TestCase):
         plugin = DatasetversionsPlugin()
 
         package = {'extras': [
-            {'key': 'versions', 'value': ['v3', 'v2', 'v1']},
+            {'key': '_versions', 'value': ['v3', 'v2', 'v1']},
             {'key': 'foo', 'value': 'bar'},
         ]}
 

@@ -39,11 +39,11 @@ def _set_versions_in_extras(dataset, versions):
     new_extras = []
 
     for e in extras:
-        if e['key'] != 'versions':
+        if e['key'] != '_versions':
             new_extras.append(e)
 
     new_extras.append(
-        {'key': 'versions', 'value': [v['name'] for v in versions]})
+        {'key': '_versions', 'value': [v['name'] for v in versions]})
 
     dataset['extras'] = new_extras
 

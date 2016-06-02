@@ -60,7 +60,7 @@ class TestPackageShow(TestBase):
 
         extras_dict = {e['key']: e['value'] for e in dataset['extras']}
 
-        assert_equals(extras_dict['versions'], [self.v10['name'],
+        assert_equals(extras_dict['_versions'], [self.v10['name'],
                                                 self.v2['name'],
                                                 self.v1['name']])
 
@@ -70,7 +70,7 @@ class TestPackageShow(TestBase):
 
         extras_dict = {e['key']: e['value'] for e in dataset['extras']}
 
-        assert_equals(extras_dict['versions'], [self.v10['name'],
+        assert_equals(extras_dict['_versions'], [self.v10['name'],
                                                 self.v2['name'],
                                                 self.v1['name']])
 
@@ -113,11 +113,11 @@ class TestPackageShow(TestBase):
 
         extras_dict = {e['key']: e['value'] for e in updated_dict['extras']}
 
-        assert_true('versions' in extras_dict)
+        assert_true('_versions' in extras_dict)
 
         # Versions would appear twice here if they accumulated, or they would
         # if the validators didn't complain
-        assert_equals(extras_dict['versions'], [
+        assert_equals(extras_dict['_versions'], [
             self.v10['name'],
             self.v2['name'],
             self.v1['name'],
@@ -132,7 +132,7 @@ class TestPackageShow(TestBase):
 
         extras_dict = {e['key']: e['value'] for e in dataset['extras']}
 
-        assert_true(self.v2['name'] not in extras_dict['versions'])
+        assert_true(self.v2['name'] not in extras_dict['_versions'])
 
     def test_versions_do_not_include_private_items(self):
         user = factories.User()
@@ -154,7 +154,7 @@ class TestPackageShow(TestBase):
 
         extras_dict = {e['key']: e['value'] for e in dataset['extras']}
 
-        assert_true(v12['name'] not in extras_dict['versions'])
+        assert_true(v12['name'] not in extras_dict['_versions'])
 
     def test_versions_empty_if_all_deleted(self):
         helpers.call_action('package_delete',
@@ -169,7 +169,7 @@ class TestPackageShow(TestBase):
 
         extras_dict = {e['key']: e['value'] for e in dataset['extras']}
 
-        assert_equals(extras_dict['versions'], [])
+        assert_equals(extras_dict['_versions'], [])
 
 
 class TestVersionNumber(TestBase):
@@ -197,4 +197,4 @@ class TestVersionNumber(TestBase):
 
         extras_dict = {e['key']: e['value'] for e in dataset['extras']}
 
-        assert_equals(extras_dict['versions'], [v1['name'], v2['name']])
+        assert_equals(extras_dict['_versions'], [v1['name'], v2['name']])
