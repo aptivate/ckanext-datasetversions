@@ -81,18 +81,6 @@ class TestPackageShow(TestBase):
         assert_true('tracking_summary' in dataset)
 
     def test_versions_dont_accumulate(self):
-        helpers.call_action('dataset_version_create',
-                            id=self.v1['id'],
-                            base_name='189-ma001')
-
-        helpers.call_action('dataset_version_create',
-                            id=self.v2['id'],
-                            base_name='189-ma001')
-
-        helpers.call_action('dataset_version_create',
-                            id=self.v10['id'],
-                            base_name='189-ma001')
-
         [rel_10] = helpers.call_action(
             'package_relationships_list',
             id=self.v10['id'],
