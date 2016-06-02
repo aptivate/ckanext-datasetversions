@@ -4,6 +4,7 @@ import ckan.logic as logic
 from ckan.logic.action.get import package_show as ckan_package_show
 
 
+@toolkit.side_effect_free
 def package_show(context, data_dict):
     this_dataset = ckan_package_show(context, data_dict)
     version_to_display = this_dataset
