@@ -170,3 +170,31 @@ class TestPackageShow(TestBase):
         extras_dict = {e['key']: e['value'] for e in dataset['extras']}
 
         assert_equals(extras_dict['versions'], [])
+
+
+class TestVersionNumber(TestBase):
+    def test_non_numeric_version_number_treated_as_zero(self):
+        v1 = helpers.call_action('package_create',
+                                 name='189-ma001-1',
+                                 extras=[{'key': 'versionNumber',
+                                          'value': '1'}])
+
+        v2 = helpers.call_action('package_create',
+                                 name='189-ma001-2',
+                                 extras=[{'key': 'versionNumber',
+                                          'value': 'v2'}])
+
+        helpers.call_action('dataset_version_create',
+                            id=v2['id'],
+                            base_name='189-ma001')
+
+        helpers.call_action('dataset_version_create',
+                            id=v1['id'],
+                            base_name='189-ma001')
+
+        dataset = helpers.call_action('package_show',
+                                      id='189-ma001')
+
+        extras_dict = {e['key']: e['value'] for e in dataset['extras']}
+
+        assert_equals(extras_dict['versions'], [v1['name'], v2['name']])
