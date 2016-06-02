@@ -8,29 +8,33 @@ def package_show(context, data_dict):
     this_dataset = base_package_show(context, data_dict)
     version_to_display = this_dataset
 
-    versions = []
+    parent_names = _get_parent_dataset_names(context, this_dataset['id'])
 
-    child_names = _get_child_dataset_names(context, this_dataset['id'])
-
-    if len(child_names) > 0:
-        versions = _get_ordered_dataset_versions(context, data_dict,
-                                                 child_names)
-
-        # Show the most recent, public active one
-        if len(versions) > 0:
-            version_to_display = versions[0]
+    if len(parent_names) > 0:
+        base_id = parent_names[0]
+        display_latest_version = False
     else:
-        # No children so we must be looking at a particular version
-        # To get all the versions, we first need the parent
-        parent_names = _get_parent_dataset_names(context, this_dataset['id'])
+        base_id = this_dataset['id']
+        display_latest_version = True
 
-        if len(parent_names) > 0:
-            child_names = _get_child_dataset_names(context, parent_names[0])
+    all_version_names = _get_child_dataset_names(context, base_id)
+    all_active_versions = _get_ordered_active_dataset_versions(
+        context,
+        data_dict,
+        all_version_names)
 
-            versions = _get_ordered_dataset_versions(context, data_dict,
-                                                     child_names)
+    # Show the most recent, public active one
+    if display_latest_version and len(all_active_versions) > 0:
+        version_to_display = all_active_versions[0]
 
-    extras = version_to_display['extras']
+    _set_versions_in_extras(version_to_display,
+                            all_active_versions)
+
+    return version_to_display
+
+
+def _set_versions_in_extras(dataset, versions):
+    extras = dataset['extras']
     new_extras = []
 
     for e in extras:
@@ -40,9 +44,7 @@ def package_show(context, data_dict):
     new_extras.append(
         {'key': 'versions', 'value': [v['name'] for v in versions]})
 
-    version_to_display['extras'] = new_extras
-
-    return version_to_display
+    dataset['extras'] = new_extras
 
 
 def _get_child_dataset_names(context, parent_id):
@@ -77,7 +79,7 @@ def _get_names_from_relationships(relationships):
     return [r['object'] for r in relationships]
 
 
-def _get_ordered_dataset_versions(context, data_dict, child_names):
+def _get_ordered_active_dataset_versions(context, data_dict, child_names):
     versions = []
 
     for name in child_names:
