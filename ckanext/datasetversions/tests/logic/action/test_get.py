@@ -39,7 +39,7 @@ class TestPackageShow(TestBase):
                             id=self.v2['id'],
                             base_name='189-ma001')
 
-        self.parent = helpers.call_action('base_package_show',
+        self.parent = helpers.call_action('ckan_package_show',
                                           id='189-ma001')
 
     def test_latest_version_displayed_when_showing_parent(self):

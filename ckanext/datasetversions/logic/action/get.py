@@ -1,11 +1,11 @@
 from ckan.plugins import toolkit
 
 import ckan.logic as logic
-from ckan.logic.action.get import package_show as base_package_show
+from ckan.logic.action.get import package_show as ckan_package_show
 
 
 def package_show(context, data_dict):
-    this_dataset = base_package_show(context, data_dict)
+    this_dataset = ckan_package_show(context, data_dict)
     version_to_display = this_dataset
 
     parent_names = _get_parent_dataset_names(context, this_dataset['id'])
@@ -84,7 +84,7 @@ def _get_ordered_active_dataset_versions(context, data_dict, child_names):
 
     for name in child_names:
         data_dict['id'] = name
-        version = base_package_show(context, data_dict)
+        version = ckan_package_show(context, data_dict)
         if version['state'] == 'active' and not version['private']:
             versions.append(version)
 

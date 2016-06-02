@@ -14,8 +14,8 @@ class DatasetversionsPlugin(plugins.SingletonPlugin):
     # IActions
     def get_actions(self):
         return {
-            'base_package_show':
-            ckanext.datasetversions.logic.action.get.base_package_show,
+            'ckan_package_show':
+            ckanext.datasetversions.logic.action.get.ckan_package_show,
             'package_show':
             ckanext.datasetversions.logic.action.get.package_show,
             'dataset_version_create':

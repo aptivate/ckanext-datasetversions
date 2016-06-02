@@ -77,7 +77,7 @@ class TestCreate(TestBase):
                             owner_org=organization['id'])
 
         parent_dataset = helpers.call_action(
-            'base_package_show',
+            'ckan_package_show',
             context={'user': self.user['name']},
             id='189-ma001')
 
