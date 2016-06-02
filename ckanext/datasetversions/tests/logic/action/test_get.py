@@ -121,3 +121,14 @@ class TestPackageShow(TestBase):
             self.v2['name'],
             self.v1['name'],
         ])
+
+    def test_versions_do_not_include_deleted_items(self):
+        helpers.call_action('package_delete',
+                            id=self.v2['name'])
+
+        dataset = helpers.call_action('package_show',
+                                      id=self.parent['id'])
+
+        extras_dict = {e['key']: e['value'] for e in dataset['extras']}
+
+        assert_true(self.v2['name'] not in extras_dict['versions'])
