@@ -14,18 +14,15 @@ class TestPackageShow(TestBase):
 
         self.v2 = helpers.call_action('package_create',
                                       name='189-ma001-2',
-                                      extras=[{'key': 'versionNumber',
-                                               'value': '2'}])
+                                      version='2')
 
         self.v1 = helpers.call_action('package_create',
                                       name='189-ma001-1',
-                                      extras=[{'key': 'versionNumber',
-                                               'value': '1'}])
+                                      version='1')
 
         self.v10 = helpers.call_action('package_create',
                                        name='189-ma001-10',
-                                       extras=[{'key': 'versionNumber',
-                                                'value': '10'}])
+                                       version='10')
 
         helpers.call_action('dataset_version_create',
                             id=self.v10['id'],
@@ -61,8 +58,8 @@ class TestPackageShow(TestBase):
         extras_dict = {e['key']: e['value'] for e in dataset['extras']}
 
         assert_equals(extras_dict['_versions'], [self.v10['name'],
-                                                self.v2['name'],
-                                                self.v1['name']])
+                                                 self.v2['name'],
+                                                 self.v1['name']])
 
     def test_other_versions_displayed_when_showing_child(self):
         dataset = helpers.call_action('package_show',
@@ -71,8 +68,8 @@ class TestPackageShow(TestBase):
         extras_dict = {e['key']: e['value'] for e in dataset['extras']}
 
         assert_equals(extras_dict['_versions'], [self.v10['name'],
-                                                self.v2['name'],
-                                                self.v1['name']])
+                                                 self.v2['name'],
+                                                 self.v1['name']])
 
     def test_tracking_summary_returned_for_parent(self):
         dataset = helpers.call_action('package_show',
@@ -143,8 +140,7 @@ class TestPackageShow(TestBase):
                                   name='189-ma001-12',
                                   private=True,
                                   owner_org=organization['id'],
-                                  extras=[{'key': 'versionNumber',
-                                           'value': '12'}])
+                                  version=12)
         helpers.call_action('dataset_version_create',
                             id=v12['id'],
                             base_name='189-ma001')
@@ -176,13 +172,11 @@ class TestVersionNumber(TestBase):
     def test_non_numeric_version_number_treated_as_zero(self):
         v1 = helpers.call_action('package_create',
                                  name='189-ma001-1',
-                                 extras=[{'key': 'versionNumber',
-                                          'value': '1'}])
+                                 version='1')
 
         v2 = helpers.call_action('package_create',
                                  name='189-ma001-2',
-                                 extras=[{'key': 'versionNumber',
-                                          'value': 'v2'}])
+                                 version='v2')
 
         helpers.call_action('dataset_version_create',
                             id=v2['id'],

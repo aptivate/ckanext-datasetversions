@@ -14,18 +14,15 @@ class TestCreate(TestBase):
         self.user = factories.User()
         self.v2 = helpers.call_action('package_create',
                                       name='189-ma001-2',
-                                      extras=[{'key': 'versionNumber',
-                                               'value': '2'}])
+                                      version=2)
 
         self.v1 = helpers.call_action('package_create',
                                       name='189-ma001-1',
-                                      extras=[{'key': 'versionNumber',
-                                               'value': '1'}])
+                                      version=1)
 
         self.v10 = helpers.call_action('package_create',
                                        name='189-ma001-10',
-                                       extras=[{'key': 'versionNumber',
-                                               'value': '10'}])
+                                       version=10)
 
     def test_new_versions_associated_with_existing(self):
         helpers.call_action('dataset_version_create',

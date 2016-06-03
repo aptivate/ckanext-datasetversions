@@ -94,10 +94,9 @@ def _get_ordered_active_dataset_versions(context, data_dict, child_names):
     return versions
 
 
-def _get_version(version):
-    extras_dict = {e['key']: e['value'] for e in version['extras']}
+def _get_version(dataset):
     try:
-        version_number = int(extras_dict['versionNumber'])
+        version_number = int(dataset['version'])
     except ValueError:
         version_number = 0
 
