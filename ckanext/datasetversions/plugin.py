@@ -127,4 +127,7 @@ class DatasetversionsPlugin(plugins.SingletonPlugin):
 
     # ITemplateHelpers
     def get_helpers(self):
-        return {'datasetversions_list': helpers.list}
+        return {
+            'datasetversions_list': helpers.list,
+            'datasetversions_is_old': helpers.is_old,
+        }
