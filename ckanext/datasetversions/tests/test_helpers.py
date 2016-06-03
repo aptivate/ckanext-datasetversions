@@ -7,10 +7,7 @@ class TestHelpers(unittest.TestCase):
     def test_list_versions(self):
         plugin = DatasetversionsPlugin()
 
-        package = {'extras': [
-            {'key': '_versions', 'value': ['v3', 'v2', 'v1']},
-            {'key': 'foo', 'value': 'bar'},
-        ]}
+        package = {'_versions': ['v3', 'v2', 'v1']}
 
         versions = plugin.get_helpers()['datasetversions_list'](package)
 

@@ -51,25 +51,21 @@ class TestPackageShow(TestBase):
 
         assert_equals(dataset['name'], self.v2['name'])
 
-    def test_other_versions_displayed_when_showing_parent(self):
+    def test_all_versions_displayed_when_showing_parent(self):
         dataset = helpers.call_action('package_show',
                                       id=self.parent['id'])
 
-        extras_dict = {e['key']: e['value'] for e in dataset['extras']}
-
-        assert_equals(extras_dict['_versions'], [self.v10['name'],
+        assert_equals(dataset['_versions'], [self.v10['name'],
                                                  self.v2['name'],
                                                  self.v1['name']])
 
-    def test_other_versions_displayed_when_showing_child(self):
+    def test_all_versions_displayed_when_showing_child(self):
         dataset = helpers.call_action('package_show',
                                       id=self.v2['id'])
 
-        extras_dict = {e['key']: e['value'] for e in dataset['extras']}
-
-        assert_equals(extras_dict['_versions'], [self.v10['name'],
-                                                 self.v2['name'],
-                                                 self.v1['name']])
+        assert_equals(dataset['_versions'], [self.v10['name'],
+                                             self.v2['name'],
+                                             self.v1['name']])
 
     def test_tracking_summary_returned_for_parent(self):
         dataset = helpers.call_action('package_show',
@@ -108,13 +104,11 @@ class TestPackageShow(TestBase):
         assert_equals(rel_10['type'], 'child_of')
         assert_equals(rel_10['object'], '189-ma001')
 
-        extras_dict = {e['key']: e['value'] for e in updated_dict['extras']}
-
-        assert_true('_versions' in extras_dict)
+        assert_true('_versions' in updated_dict)
 
         # Versions would appear twice here if they accumulated, or they would
         # if the validators didn't complain
-        assert_equals(extras_dict['_versions'], [
+        assert_equals(updated_dict['_versions'], [
             self.v10['name'],
             self.v2['name'],
             self.v1['name'],
@@ -127,9 +121,7 @@ class TestPackageShow(TestBase):
         dataset = helpers.call_action('package_show',
                                       id=self.parent['id'])
 
-        extras_dict = {e['key']: e['value'] for e in dataset['extras']}
-
-        assert_true(self.v2['name'] not in extras_dict['_versions'])
+        assert_true(self.v2['name'] not in dataset['_versions'])
 
     def test_versions_do_not_include_private_items(self):
         user = factories.User()
@@ -148,9 +140,7 @@ class TestPackageShow(TestBase):
         dataset = helpers.call_action('package_show',
                                       id=self.parent['id'])
 
-        extras_dict = {e['key']: e['value'] for e in dataset['extras']}
-
-        assert_true(v12['name'] not in extras_dict['_versions'])
+        assert_true(v12['name'] not in dataset['_versions'])
 
     def test_versions_empty_if_all_deleted(self):
         helpers.call_action('package_delete',
@@ -163,9 +153,7 @@ class TestPackageShow(TestBase):
         dataset = helpers.call_action('package_show',
                                       id=self.parent['id'])
 
-        extras_dict = {e['key']: e['value'] for e in dataset['extras']}
-
-        assert_equals(extras_dict['_versions'], [])
+        assert_equals(dataset['_versions'], [])
 
 
 class TestVersionNumber(TestBase):
@@ -189,6 +177,4 @@ class TestVersionNumber(TestBase):
         dataset = helpers.call_action('package_show',
                                       id='189-ma001')
 
-        extras_dict = {e['key']: e['value'] for e in dataset['extras']}
-
-        assert_equals(extras_dict['_versions'], [v1['name'], v2['name']])
+        assert_equals(dataset['_versions'], [v1['name'], v2['name']])

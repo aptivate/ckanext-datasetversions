@@ -28,24 +28,9 @@ def package_show(context, data_dict):
     if display_latest_version and len(all_active_versions) > 0:
         version_to_display = all_active_versions[0]
 
-    _set_versions_in_extras(version_to_display,
-                            all_active_versions)
+    version_to_display['_versions'] = [v['name'] for v in all_active_versions]
 
     return version_to_display
-
-
-def _set_versions_in_extras(dataset, versions):
-    extras = dataset['extras']
-    new_extras = []
-
-    for e in extras:
-        if e['key'] != '_versions':
-            new_extras.append(e)
-
-    new_extras.append(
-        {'key': '_versions', 'value': [v['name'] for v in versions]})
-
-    dataset['extras'] = new_extras
 
 
 def _get_child_dataset_names(context, parent_id):
