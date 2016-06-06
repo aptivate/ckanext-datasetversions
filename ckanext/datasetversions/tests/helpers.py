@@ -18,3 +18,15 @@ class TestBase(helpers.FunctionalTestBase):
     def teardown_class(cls):
         plugins.unload('datasetversions')
         super(TestBase, cls).teardown_class()
+
+    def assert_version_names(self, dataset, expected_names):
+
+        actual_names = [n[0] for n in dataset['_versions']]
+
+        assert_equals(actual_names, expected_names)
+
+    def assert_version_urls(self, dataset, expected_urls):
+
+        actual_urls = [n[1] for n in dataset['_versions']]
+
+        assert_equals(actual_urls, expected_urls)

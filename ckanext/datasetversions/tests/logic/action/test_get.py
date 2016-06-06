@@ -55,17 +55,20 @@ class TestPackageShow(TestBase):
         dataset = helpers.call_action('package_show',
                                       id=self.parent['id'])
 
-        assert_equals(dataset['_versions'], [self.v10['name'],
-                                                 self.v2['name'],
-                                                 self.v1['name']])
+        self.assert_version_names(dataset, [
+            self.v10['name'],
+            self.v2['name'],
+            self.v1['name']])
 
     def test_all_versions_displayed_when_showing_child(self):
         dataset = helpers.call_action('package_show',
                                       id=self.v2['id'])
 
-        assert_equals(dataset['_versions'], [self.v10['name'],
-                                             self.v2['name'],
-                                             self.v1['name']])
+        self.assert_version_names(dataset, [
+            self.v10['name'],
+            self.v2['name'],
+            self.v1['name'],
+        ])
 
     def test_tracking_summary_returned_for_parent(self):
         dataset = helpers.call_action('package_show',
@@ -108,7 +111,7 @@ class TestPackageShow(TestBase):
 
         # Versions would appear twice here if they accumulated, or they would
         # if the validators didn't complain
-        assert_equals(updated_dict['_versions'], [
+        self.assert_version_names(updated_dict, [
             self.v10['name'],
             self.v2['name'],
             self.v1['name'],
@@ -155,6 +158,16 @@ class TestPackageShow(TestBase):
 
         assert_equals(dataset['_versions'], [])
 
+    def test_latest_url_is_parent(self):
+        dataset = helpers.call_action('package_show',
+                                      id=self.parent['id'],
+                                      include_tracking=True)
+
+        self.assert_version_urls(dataset, [
+            self.parent['name'],
+            self.v2['name'],
+            self.v1['name']])
+
 
 class TestVersionNumber(TestBase):
     def test_non_numeric_version_number_treated_as_zero(self):
@@ -177,4 +190,4 @@ class TestVersionNumber(TestBase):
         dataset = helpers.call_action('package_show',
                                       id='189-ma001')
 
-        assert_equals(dataset['_versions'], [v1['name'], v2['name']])
+        self.assert_version_names(dataset, [v1['name'], v2['name']])

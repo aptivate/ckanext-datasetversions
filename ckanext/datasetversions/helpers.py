@@ -5,7 +5,9 @@ def list(package):
 def is_old(package):
     versions = package.get('_versions', [])
 
+    names = [v[0] for v in versions]
+
     try:
-        return versions.index(package['name']) != 0
+        return names.index(package['name']) != 0
     except ValueError:
         return False

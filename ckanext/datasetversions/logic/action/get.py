@@ -12,13 +12,13 @@ def package_show(context, data_dict):
     parent_names = _get_parent_dataset_names(context, this_dataset['id'])
 
     if len(parent_names) > 0:
-        base_id = parent_names[0]
+        base_name = parent_names[0]
         display_latest_version = False
     else:
-        base_id = this_dataset['id']
+        base_name = this_dataset['name']
         display_latest_version = True
 
-    all_version_names = _get_child_dataset_names(context, base_id)
+    all_version_names = _get_child_dataset_names(context, base_name)
     all_active_versions = _get_ordered_active_dataset_versions(
         context,
         data_dict,
@@ -28,7 +28,17 @@ def package_show(context, data_dict):
     if display_latest_version and len(all_active_versions) > 0:
         version_to_display = all_active_versions[0]
 
-    version_to_display['_versions'] = [v['name'] for v in all_active_versions]
+    version_names_and_urls = []
+
+    for (i, v) in enumerate(all_active_versions):
+        if i == 0:
+            url = base_name
+        else:
+            url = v['name']
+
+        version_names_and_urls.append((v['name'], url))
+
+    version_to_display['_versions'] = version_names_and_urls
 
     return version_to_display
 
