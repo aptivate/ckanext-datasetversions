@@ -7,10 +7,22 @@ def dataset_version_create(context, data_dict):
     id = data_dict.get('id')
     parent_name = data_dict.get('base_name')
 
+    owner_org = data_dict.get('owner_org')
+
+    parent_dict = {
+        'name': parent_name,
+    }
+
+    if owner_org:
+        parent_dict['owner_org'] = owner_org
+        parent_dict['private'] = True
+    else:
+        parent_dict['private'] = False
+
     parent = _get_or_create_parent_dataset(
         context,
-        {'name': parent_name,
-         'owner_org': data_dict.get('owner_org')})
+        parent_dict
+    )
 
     toolkit.get_action('package_relationship_create')(
         _get_context(context), {

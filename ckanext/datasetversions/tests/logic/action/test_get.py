@@ -169,6 +169,38 @@ class TestPackageShow(TestBase):
             self.v1['name']])
 
 
+class TestPackageSearch(TestBase):
+    def setup(self):
+        super(TestPackageSearch, self).setup()
+
+        self.user = factories.User()
+        self.organization = factories.Organization(user=self.user)
+
+        self.v1 = helpers.call_action('package_create',
+                                      name='189-ma001-1',
+                                      version='1')
+
+        helpers.call_action('dataset_version_create',
+                            id=self.v1['id'],
+                            base_name='189-ma001',
+                            context={'user': self.user['name']},
+                            owner_org=self.organization['id'])
+
+        self.parent = helpers.call_action('ckan_package_show',
+                                          id='189-ma001')
+
+    def test_search_results_do_not_include_parent_version_if_private(self):
+        results = helpers.call_action('package_search',
+                                      q='*:*',
+                                      start='0',
+                                      rows='20',
+                                      sort='metadata_modified desc')
+
+        names = [r['name'] for r in results['results']]
+
+        assert_true('189-ma001' not in names)
+
+
 class TestVersionNumber(TestBase):
     def test_non_numeric_version_number_treated_as_zero(self):
         v1 = helpers.call_action('package_create',

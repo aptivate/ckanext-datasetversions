@@ -12,6 +12,8 @@ class TestCreate(TestBase):
         super(TestBase, self).setup()
 
         self.user = factories.User()
+        self.organization = factories.Organization(user=self.user)
+
         self.v2 = helpers.call_action('package_create',
                                       name='189-ma001-2',
                                       version=2)
@@ -65,13 +67,11 @@ class TestCreate(TestBase):
         assert_equals(rel_10['object'], '189-ma001')
 
     def test_organization_set(self):
-        organization = factories.Organization(user=self.user)
-
         helpers.call_action('dataset_version_create',
                             context={'user': self.user['name']},
                             id=self.v1['id'],
                             base_name='189-ma001',
-                            owner_org=organization['id'])
+                            owner_org=self.organization['id'])
 
         parent_dataset = helpers.call_action(
             'ckan_package_show',
@@ -79,4 +79,31 @@ class TestCreate(TestBase):
             id='189-ma001')
 
         assert_equals(parent_dataset['owner_org'],
-                      organization['id'])
+                      self.organization['id'])
+
+    def test_parent_dataset_is_private_with_owner_org(self):
+        helpers.call_action('dataset_version_create',
+                            context={'user': self.user['name']},
+                            id=self.v1['id'],
+                            base_name='189-ma001',
+                            owner_org=self.organization['id'])
+
+        parent_dataset = helpers.call_action(
+            'ckan_package_show',
+            context={'user': self.user['name']},
+            id='189-ma001')
+
+        assert_equals(parent_dataset['private'], True)
+
+    def test_parent_dataset_is_public_for_no_owner_org(self):
+        helpers.call_action('dataset_version_create',
+                            context={'user': self.user['name']},
+                            id=self.v1['id'],
+                            base_name='189-ma001')
+
+        parent_dataset = helpers.call_action(
+            'ckan_package_show',
+            context={'user': self.user['name']},
+            id='189-ma001')
+
+        assert_equals(parent_dataset['private'], False)
