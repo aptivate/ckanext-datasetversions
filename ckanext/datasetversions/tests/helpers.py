@@ -4,8 +4,9 @@ import ckan.tests.helpers as helpers
 import ckan.plugins as plugins
 
 assert_equals = nose.tools.assert_equals
-assert_true = nose.tools.assert_true
+assert_raises = nose.tools.assert_raises
 assert_regexp_matches = nose.tools.assert_regexp_matches
+assert_true = nose.tools.assert_true
 
 
 class TestBase(helpers.FunctionalTestBase):
@@ -20,13 +21,13 @@ class TestBase(helpers.FunctionalTestBase):
         super(TestBase, cls).teardown_class()
 
     def assert_version_names(self, dataset, expected_names):
-
-        actual_names = [n[0] for n in dataset['_versions']]
-
-        assert_equals(actual_names, expected_names)
+        assert_equals(self.get_version_names(dataset), expected_names)
 
     def assert_version_urls(self, dataset, expected_urls):
+        assert_equals(self.get_version_urls(dataset), expected_urls)
 
-        actual_urls = [n[1] for n in dataset['_versions']]
+    def get_version_names(self, dataset):
+        return [n[0] for n in dataset['_versions']]
 
-        assert_equals(actual_urls, expected_urls)
+    def get_version_urls(self, dataset):
+        return [n[1] for n in dataset['_versions']]

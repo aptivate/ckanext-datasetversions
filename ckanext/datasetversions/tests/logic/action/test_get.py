@@ -1,40 +1,65 @@
+import ckan.logic as logic
 import ckan.tests.helpers as helpers
 import ckan.tests.factories as factories
 
 from ckanext.datasetversions.tests.helpers import (
     assert_equals,
+    assert_raises,
     assert_true,
     TestBase,
 )
 
 
-class TestPackageShow(TestBase):
+class TestPackageShowBase(TestBase):
     def setup(self):
-        super(TestPackageShow, self).setup()
+        super(TestPackageShowBase, self).setup()
+
+        self.user = factories.User()
+        self.organization = factories.Organization(
+            user=self.user)
+        self.logged_out_context = {'ignore_auth': False,
+                                   'auth_user_obj': None}
+
+
+class TestPackageShowThreeVersions(TestPackageShowBase):
+    def setup(self):
+        super(TestPackageShowThreeVersions, self).setup()
 
         self.v2 = helpers.call_action('package_create',
+                                      context={'user': self.user['id']},
                                       name='189-ma001-2',
-                                      version='2')
+                                      version='2',
+                                      owner_org=self.organization['id'])
 
         self.v1 = helpers.call_action('package_create',
+                                      context={'user': self.user['id']},
                                       name='189-ma001-1',
-                                      version='1')
+                                      version='1',
+                                      owner_org=self.organization['id'])
 
         self.v10 = helpers.call_action('package_create',
+                                       context={'user': self.user['id']},
                                        name='189-ma001-10',
-                                       version='10')
+                                       version='10',
+                                       owner_org=self.organization['id'])
 
         helpers.call_action('dataset_version_create',
+                            context={'user': self.user['id']},
                             id=self.v10['id'],
-                            base_name='189-ma001')
+                            base_name='189-ma001',
+                            owner_org=self.organization['id'])
 
         helpers.call_action('dataset_version_create',
+                            context={'user': self.user['id']},
                             id=self.v1['id'],
-                            base_name='189-ma001')
+                            base_name='189-ma001',
+                            owner_org=self.organization['id'])
 
         helpers.call_action('dataset_version_create',
+                            context={'user': self.user['id']},
                             id=self.v2['id'],
-                            base_name='189-ma001')
+                            base_name='189-ma001',
+                            owner_org=self.organization['id'])
 
         self.parent = helpers.call_action('ckan_package_show',
                                           id='189-ma001')
@@ -95,6 +120,7 @@ class TestPackageShow(TestBase):
         del dataset_dict['relationships_as_object']
 
         updated_dict = helpers.call_action('package_update',
+                                           context={'user': self.user['id']},
                                            **dataset_dict)
 
         # Tests the above bug
@@ -124,17 +150,15 @@ class TestPackageShow(TestBase):
         dataset = helpers.call_action('package_show',
                                       id=self.parent['id'])
 
-        assert_true(self.v2['name'] not in dataset['_versions'])
+        assert_true(self.v2['name'] not in
+                    self.get_version_names(dataset))
 
     def test_versions_do_not_include_private_items(self):
-        user = factories.User()
-        organization = factories.Organization(user=user)
-
         v12 = helpers.call_action('package_create',
-                                  context={'user': user['id']},
+                                  context={'user': self.user['id']},
                                   name='189-ma001-12',
                                   private=True,
-                                  owner_org=organization['id'],
+                                  owner_org=self.organization['id'],
                                   version=12)
         helpers.call_action('dataset_version_create',
                             id=v12['id'],
@@ -143,7 +167,7 @@ class TestPackageShow(TestBase):
         dataset = helpers.call_action('package_show',
                                       id=self.parent['id'])
 
-        assert_true(v12['name'] not in dataset['_versions'])
+        assert_true(v12['name'] not in self.get_version_names(dataset))
 
     def test_versions_empty_if_all_deleted(self):
         helpers.call_action('package_delete',
@@ -160,13 +184,99 @@ class TestPackageShow(TestBase):
 
     def test_latest_url_is_parent(self):
         dataset = helpers.call_action('package_show',
-                                      id=self.parent['id'],
-                                      include_tracking=True)
+                                      id=self.parent['id'])
 
         self.assert_version_urls(dataset, [
             self.parent['name'],
             self.v2['name'],
             self.v1['name']])
+
+    def test_can_see_latest_version_when_logged_out(self):
+        dataset = helpers.call_action('package_show',
+                                      self.logged_out_context,
+                                      id=self.parent['id'])
+
+        assert_equals(dataset['name'], self.v10['name'])
+
+
+class TestLoggedOutPackageShow(TestPackageShowBase):
+    def setup(self):
+        super(TestLoggedOutPackageShow, self).setup()
+
+    def test_private_versioned_dataset_not_available_as_latest(self):
+        v12 = helpers.call_action('package_create',
+                                  context={'user': self.user['id']},
+                                  name='189-ma001-12',
+                                  private=True,
+                                  owner_org=self.organization['id'],
+                                  version=12)
+        helpers.call_action('dataset_version_create',
+                            id=v12['id'],
+                            base_name='189-ma001')
+
+        dataset = helpers.call_action('package_show',
+                                      context=self.logged_out_context,
+                                      id='189-ma001')
+        assert_true(v12['name'] not in self.get_version_names(dataset))
+
+    def test_not_authorized_for_private_unversioned_dataset(self):
+        dataset = helpers.call_action('package_create',
+                                      context={'user': self.user['id']},
+                                      name='dataset-without-versions',
+                                      private=True,
+                                      owner_org=self.organization['id'])
+
+        assert_raises(logic.NotAuthorized,
+                      helpers.call_action,
+                      'package_show',
+                      self.logged_out_context,
+                      id=dataset['id'])
+
+    def test_not_authorized_for_private_versioned_dataset(self):
+        v12 = helpers.call_action('package_create',
+                                  context={'user': self.user['id']},
+                                  name='189-ma001-12',
+                                  private=True,
+                                  owner_org=self.organization['id'],
+                                  version=12)
+        helpers.call_action('dataset_version_create',
+                            id=v12['id'],
+                            base_name='189-ma001')
+
+        assert_raises(logic.NotAuthorized,
+                      helpers.call_action,
+                      'package_show',
+                      self.logged_out_context,
+                      id='189-ma001-12')
+
+    def test_authorized_for_public_versioned_dataset_when_other_private(self):
+        v1 = helpers.call_action('package_create',
+                                 context={'user': self.user['id']},
+                                 name='189-ma001-1',
+                                 private=False,
+                                 owner_org=self.organization['id'],
+                                 version=1)
+
+        v2 = helpers.call_action('package_create',
+                                 context={'user': self.user['id']},
+                                 name='189-ma001-2',
+                                 private=True,
+                                 owner_org=self.organization['id'],
+                                 version=2)
+
+        helpers.call_action('dataset_version_create',
+                            id=v1['id'],
+                            base_name='189-ma001')
+
+        helpers.call_action('dataset_version_create',
+                            id=v2['id'],
+                            base_name='189-ma001')
+
+        dataset = helpers.call_action('package_show',
+                                      context=self.logged_out_context,
+                                      id='189-ma001-1')
+
+        assert_true(v1['name'] in self.get_version_names(dataset))
 
 
 class TestPackageSearch(TestBase):
