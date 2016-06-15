@@ -102,6 +102,20 @@ class TestPackageShowThreeVersions(TestPackageShowBase):
 
         assert_true('tracking_summary' in dataset)
 
+    def test_relationships_not_included_for_parent(self):
+        dataset = helpers.call_action('package_show',
+                                      id=self.parent['id'])
+
+        assert_true('relationships_as_subject' not in dataset)
+        assert_true('relationships_as_object' not in dataset)
+
+    def test_relationships_not_included_for_child(self):
+        dataset = helpers.call_action('package_show',
+                                      id=self.v1['id'])
+
+        assert_true('relationships_as_subject' not in dataset)
+        assert_true('relationships_as_object' not in dataset)
+
     def test_versions_dont_accumulate(self):
         [rel_10] = helpers.call_action(
             'package_relationships_list',
@@ -115,15 +129,10 @@ class TestPackageShowThreeVersions(TestPackageShowBase):
         dataset_dict = helpers.call_action('package_show',
                                            id='189-ma001')
 
-        # TODO: Looks like a bug?
-        del dataset_dict['relationships_as_subject']
-        del dataset_dict['relationships_as_object']
-
         updated_dict = helpers.call_action('package_update',
                                            context={'user': self.user['id']},
                                            **dataset_dict)
 
-        # Tests the above bug
         [rel_10] = helpers.call_action(
             'package_relationships_list',
             id=self.v10['id'],
