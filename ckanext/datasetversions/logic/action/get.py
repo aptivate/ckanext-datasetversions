@@ -136,6 +136,6 @@ def _get_context(context):
     return {
         'model': context['model'],
         'session': context['session'],
-        'user': context['user'],
+        'user': context.get('user'),
         'ignore_auth': context.get('ignore_auth', False)
     }
