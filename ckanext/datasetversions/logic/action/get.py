@@ -58,6 +58,12 @@ def package_show(context, data_dict):
     version_to_display['_versions'] = _get_version_names_and_urls(
         all_active_versions, base_name)
 
+    # Reindexing fails if we don't do this
+    # Later versions of CKAN will not include these in the package
+    # See https://github.com/ckan/ckan/issues/3114
+    version_to_display.pop('relationships_as_subject', False)
+    version_to_display.pop('relationships_as_object', False)
+
     return version_to_display
 
 
