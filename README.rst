@@ -1,57 +1,64 @@
-.. You should enable this project on travis-ci.org and coveralls.io to make
-   these badges work. The necessary Travis and Coverage config files have been
-   generated for you.
-
-.. image:: https://travis-ci.org/aptivate/ckanext-datasetversions.svg?branch=master
-    :target: https://travis-ci.org/aptivate/ckanext-datasetversions
-
-.. image:: https://coveralls.io/repos/aptivate/ckanext-datasetversions/badge.svg
-  :target: https://coveralls.io/r/aptivate/ckanext-datasetversions
-
-.. image:: https://pypip.in/download/ckanext-datasetversions/badge.svg
-    :target: https://pypi.python.org/pypi//ckanext-datasetversions/
-    :alt: Downloads
-
-.. image:: https://pypip.in/version/ckanext-datasetversions/badge.svg
-    :target: https://pypi.python.org/pypi/ckanext-datasetversions/
-    :alt: Latest Version
-
-.. image:: https://pypip.in/py_versions/ckanext-datasetversions/badge.svg
-    :target: https://pypi.python.org/pypi/ckanext-datasetversions/
-    :alt: Supported Python versions
-
-.. image:: https://pypip.in/status/ckanext-datasetversions/badge.svg
-    :target: https://pypi.python.org/pypi/ckanext-datasetversions/
-    :alt: Development Status
-
-.. image:: https://pypip.in/license/ckanext-datasetversions/badge.svg
-    :target: https://pypi.python.org/pypi/ckanext-datasetversions/
-    :alt: License
-
-=============
+=======================
 ckanext-datasetversions
-=============
+=======================
 
-.. Put a description of your extension here:
-   What does it do? What features does it have?
-   Consider including some screenshots or embedding a video!
+This CKAN extension adds support for different versions of a dataset. Sometimes
+is is desirable to store and display together different versions of a dataset,
+for example a daily situation report-style map during a humanitarian crisis.
 
+This plugin provides an action ``dataset_version_create``, for example::
+
+    toolkit.get_action('dataset_version_create')(
+        context, {
+            'id': dataset['id'],
+            'base_name': base_name,
+            'owner_org': owner_org
+        }
+    )
+
+The plugin models dataset versions internally by creating a parent dataset, with
+minimal metadata and no resources. A child dataset is created for each version.
+
+``dataset_version_create`` will create a parent-child relationship between the
+dataset specified by ``base_name`` and that specified by ``id``. If the dataset
+specified by ``base_name`` does not exist, it will be created.
+
+Note that this plugin overrides CKAN's ``package_show`` action. The original
+``package_show`` is made available as ``ckan_package_show``.
+
+For datasets with different versions, the overridden ``package_show`` will
+return:
+
+* The latest, public, active version of the dataset if the parent name or id is specified
+* A specific version of the dataset if the child name or id is specified
+
+The version ordering is determined by the integer value of ``version`` in the
+dataset metadata.
+
+In addition, ``package_show`` will return a list of the names and URLs of all
+active versions as ``_versions`` in the dictionary.
+
+The plugin provides templates to list versions of a dataset alongside that
+currently viewed and to warn the user if they are looking at an old version of a
+dataset.
 
 ------------
 Requirements
 ------------
 
-For example, you might want to mention here which versions of CKAN this
-extension works with.
+This plugin will not work 'out of the box'. You will need to write code to call
+the ``dataset_version_create`` action. A site-specific example is available at
+https://github.com/aptivate/ckanext-mapactionimporter
 
+This is known to work with CKAN 2.5.2, though note there are problems when
+purging datasets with relationships. See:
+
+* https://github.com/ckan/ckan/pull/3112
+* https://github.com/ckan/ckan/issues/2186
 
 ------------
 Installation
 ------------
-
-.. Add any additional install steps to the list below.
-   For example installing any non-Python dependencies or adding any required
-   config settings.
 
 To install ckanext-datasetversions:
 
@@ -76,11 +83,7 @@ To install ckanext-datasetversions:
 Config Settings
 ---------------
 
-Document any optional config settings here. For example::
-
-    # The minimum number of hours to wait before re-checking a resource
-    # (optional, default: 24).
-    ckanext.datasetversions.some_setting = some_default_value
+None
 
 
 ------------------------
@@ -110,9 +113,9 @@ coverage installed in your virtualenv (``pip install coverage``) then run::
     nosetests --nologcapture --with-pylons=test.ini --with-coverage --cover-package=ckanext.datasetversions --cover-inclusive --cover-erase --cover-tests
 
 
----------------------------------
+-------------------------------------------
 Registering ckanext-datasetversions on PyPI
----------------------------------
+-------------------------------------------
 
 ckanext-datasetversions should be availabe on PyPI as
 https://pypi.python.org/pypi/ckanext-datasetversions. If that link doesn't work, then
@@ -139,9 +142,9 @@ steps:
        git push --tags
 
 
-----------------------------------------
+--------------------------------------------------
 Releasing a New Version of ckanext-datasetversions
-----------------------------------------
+--------------------------------------------------
 
 ckanext-datasetversions is availabe on PyPI as https://pypi.python.org/pypi/ckanext-datasetversions.
 To publish a new version to PyPI follow these steps:
