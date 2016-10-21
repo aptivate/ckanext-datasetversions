@@ -167,3 +167,13 @@ To publish a new version to PyPI follow these steps:
 
        git tag 0.0.2
        git push --tags
+
+-----
+About
+-----
+Copyright (c) 2016 `MapAction <http://mapaction.org>`_. Developed by `Aptivate <http://aptivate.org>`_.
+
+Development of v1 of this plugin was funded by `ECHO <http://ec.europa.eu/echo>`_.
+
+.. image:: http://www.echo-visibility.eu/wp-content/uploads/2014/02/EU_Flag_HA_2016_EN-300x272.png
+   :alt: "Funded by European Union Humanitarian Aid"
