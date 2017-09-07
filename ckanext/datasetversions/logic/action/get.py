@@ -139,9 +139,15 @@ def _get_version(dataset):
 def _get_context(context):
     # Unfortunately CKAN puts things in the context, which
     # makes reusing it for multiple API calls inadvisable
-    return {
+    new_context = {
         'model': context['model'],
         'session': context['session'],
         'user': context.get('user'),
-        'ignore_auth': context.get('ignore_auth', False)
+        'ignore_auth': context.get('ignore_auth', False),
+        'use_cache': context.get('use_cache', False),
     }
+
+    if 'validate' in context:
+        new_context['validate'] = context['validate']
+
+    return new_context
