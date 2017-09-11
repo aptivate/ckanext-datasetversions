@@ -2,6 +2,8 @@ import ckan.logic as logic
 from ckan.logic.action.get import package_show as ckan_package_show
 from ckan.plugins import toolkit
 
+from ckanext.datasetversions.helpers import _get_context
+
 
 def dataset_version_create(context, data_dict):
     id = data_dict.get('id')
@@ -42,12 +44,3 @@ def _get_or_create_parent_dataset(context, data_dict):
             _get_context(context), data_dict)
 
     return dataset
-
-
-def _get_context(context):
-    return {
-        'model': context['model'],
-        'session': context['session'],
-        'user': context['user'],
-        'ignore_auth': context.get('ignore_auth', False)
-    }
