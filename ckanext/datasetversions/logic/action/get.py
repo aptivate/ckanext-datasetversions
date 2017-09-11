@@ -3,6 +3,8 @@ from ckan.plugins import toolkit
 import ckan.logic as logic
 from ckan.logic.action.get import package_show as ckan_package_show
 
+from ckanext.datasetversions.helpers import _get_context
+
 
 @toolkit.side_effect_free
 def package_show(context, data_dict):
@@ -134,25 +136,3 @@ def _get_version(dataset):
         version_number = 0
 
     return version_number
-
-
-def _get_context(context):
-    """An internal context generator. Accepts a CKAN context.
-
-    CKAN's internals put various things into the context which
-    makes reusing it for multiple API calls inadvisable. This
-    function adds more fine grain control on the context from
-    our plugin logic side.
-    """
-    new_context = {
-        'model': context['model'],
-        'session': context['session'],
-        'user': context.get('user'),
-        'ignore_auth': context.get('ignore_auth', False),
-        'use_cache': context.get('use_cache', False),
-    }
-
-    if 'validate' in context:
-        new_context['validate'] = context['validate']
-
-    return new_context
