@@ -137,8 +137,13 @@ def _get_version(dataset):
 
 
 def _get_context(context):
-    # Unfortunately CKAN puts things in the context, which
-    # makes reusing it for multiple API calls inadvisable
+    """An internal context generator. Accepts a CKAN context.
+
+    CKAN's internals put various things into the context which
+    makes reusing it for multiple API calls inadvisable. This
+    function adds more fine grain control on the context from
+    our plugin logic side.
+    """
     new_context = {
         'model': context['model'],
         'session': context['session'],
