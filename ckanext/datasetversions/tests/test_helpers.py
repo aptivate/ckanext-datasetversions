@@ -39,3 +39,22 @@ class TestHelpers(unittest.TestCase):
         package = {'name': 'v3'}
 
         self.assertFalse(self._get_helper('datasetversions_is_old')(package))
+
+    def test_get_context_threads_desired_values(self):
+        default_keys = ['model', 'session', 'user', 'ignore_auth', 'use_cache']
+        minimal_context = {'model': 'foo', 'session': 'bar'}
+        get_context = self._get_helper('datasetversions_get_context')
+
+        result = get_context(minimal_context)
+        self.assertEqual(sorted(result.keys()), sorted(default_keys))
+
+        should_val = dict(minimal_context.items(), **{'validate': True})
+        result = get_context(should_val)
+        self.assertTrue(result['validate'])
+
+        shouldnt_val = dict(minimal_context.items(), **{'validate': False})
+        result = get_context(shouldnt_val)
+        self.assertFalse(result['validate'])
+
+        result = get_context(shouldnt_val)
+        self.assertIsNone(result['user'])
