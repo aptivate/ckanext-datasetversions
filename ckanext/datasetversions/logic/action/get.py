@@ -3,7 +3,7 @@ from ckan.plugins import toolkit
 import ckan.logic as logic
 from ckan.logic.action.get import package_show as ckan_package_show
 
-from ckanext.datasetversions.helpers import _get_context
+from ckanext.datasetversions.helpers import get_context
 
 
 @toolkit.side_effect_free
@@ -23,19 +23,19 @@ def package_show(context, data_dict):
     version_to_display = requested_dataset
 
     parent_names = _get_parent_dataset_names(
-        _get_context(context), requested_dataset['id'])
+        get_context(context), requested_dataset['id'])
 
     if len(parent_names) > 0:
         base_name = parent_names[0]
         dataset_type = DatasetType.specific_version
         all_version_names = _get_child_dataset_names(
-            _get_context(context), base_name)
+            get_context(context), base_name)
     else:
         # Requesting the latest version or an unversioned dataset
         base_name = requested_dataset['name']
 
         all_version_names = _get_child_dataset_names(
-            _get_context(context), base_name)
+            get_context(context), base_name)
 
         if len(all_version_names) > 0:
             dataset_type = DatasetType.latest_version
@@ -43,7 +43,7 @@ def package_show(context, data_dict):
             dataset_type = DatasetType.unversioned
 
     all_active_versions = _get_ordered_active_dataset_versions(
-        _get_context(context),
+        get_context(context),
         data_dict.copy(),  # Will get modified so make a copy
         all_version_names)
 
@@ -55,7 +55,7 @@ def package_show(context, data_dict):
     if dataset_type in (DatasetType.unversioned, DatasetType.specific_version):
         # Do default CKAN authentication
         context['ignore_auth'] = ignore_auth
-        logic.check_access('package_show', _get_context(context), data_dict)
+        logic.check_access('package_show', get_context(context), data_dict)
 
     version_to_display['_versions'] = _get_version_names_and_urls(
         all_active_versions, base_name)

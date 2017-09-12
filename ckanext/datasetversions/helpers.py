@@ -13,7 +13,7 @@ def is_old(package):
         return False
 
 
-def _get_context(context):
+def get_context(context):
     """An internal context generator. Accepts a CKAN context.
 
     CKAN's internals put various things into the context which

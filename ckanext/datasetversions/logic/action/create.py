@@ -2,7 +2,7 @@ import ckan.logic as logic
 from ckan.logic.action.get import package_show as ckan_package_show
 from ckan.plugins import toolkit
 
-from ckanext.datasetversions.helpers import _get_context
+from ckanext.datasetversions.helpers import get_context
 
 
 def dataset_version_create(context, data_dict):
@@ -27,7 +27,7 @@ def dataset_version_create(context, data_dict):
     )
 
     toolkit.get_action('package_relationship_create')(
-        _get_context(context), {
+        get_context(context), {
             'subject': id,
             'object': parent['id'],
             'type': 'child_of',
@@ -38,9 +38,9 @@ def dataset_version_create(context, data_dict):
 def _get_or_create_parent_dataset(context, data_dict):
     try:
         dataset = ckan_package_show(
-            _get_context(context), {'id': data_dict['name']})
+            get_context(context), {'id': data_dict['name']})
     except (logic.NotFound):
         dataset = toolkit.get_action('package_create')(
-            _get_context(context), data_dict)
+            get_context(context), data_dict)
 
     return dataset
