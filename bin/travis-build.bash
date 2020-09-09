@@ -8,9 +8,9 @@ sudo apt-get update -qq
 sudo apt-get install solr-jetty libcommons-fileupload-java:amd64
 
 echo "Installing CKAN and its Python dependencies..."
-git clone https://github.com/aptivate/ckan
+git clone https://github.com/ckan/ckan
 cd ckan
-export ckan_branch=mapaction-dev
+export ckan_branch=2.7
 echo "CKAN branch: $ckan_branch"
 git checkout $ckan_branch
 python setup.py develop
