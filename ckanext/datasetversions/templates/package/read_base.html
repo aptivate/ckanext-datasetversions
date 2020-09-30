@@ -9,7 +9,7 @@
     <h2 class="module-heading"><i class="icon-medium icon-calendar"></i> {{ _('Versions') }}</h2>
     <ul class="nav nav-simple dataset-version-list">
         {% for version, url in versions %}
-      <li class="nav-item">{% link_for version, 'dataset.read', id=url %}</li>
+      <li class="nav-item">{% link_for version, controller='package', action='read', id=url %}</li>
         {% endfor %}
     </ul>
   </section>

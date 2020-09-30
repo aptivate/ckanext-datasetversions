@@ -3,7 +3,7 @@
     {% if pkg %}
       {% set versions=h.datasetversions_list(pkg) %}
       {% if h.datasetversions_is_old(pkg) %}
-        {% set newer_url = h.url_for('dataset.read', id=versions[0][1]) %}
+        {% set newer_url = h.url_for(controller='package', action='read', id=versions[0][1]) %}
   <div class="old-version module info alert alert-warning">
     <p class="module-content">
     {% trans newer_url=newer_url %}This is an old version. Go to the <a href="{{ newer_url }}">latest version</a> to see the most up-to-date resources.{% endtrans %}
