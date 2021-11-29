@@ -1,7 +1,9 @@
 from ckan.plugins import toolkit
+from ckan.lib import helpers as core_helpers
 
 import ckan.logic as logic
 from ckan.logic.action.get import package_show as ckan_package_show
+from ckan.logic.action.get import package_search as ckan_package_search
 
 
 @toolkit.side_effect_free
@@ -17,6 +19,12 @@ def package_show(context, data_dict):
 
     # Get the dataset we actually asked for
     requested_dataset = ckan_package_show(context, data_dict)
+
+    # Add field with URL to the Api that points to the web UI for datasets
+    requested_dataset['url'] = core_helpers.url_for(controller='package',
+                                                    action='read',
+                                                    id=requested_dataset['name'],
+                                                    qualified=True)
 
     version_to_display = requested_dataset
 
@@ -65,6 +73,23 @@ def package_show(context, data_dict):
     version_to_display.pop('relationships_as_object', False)
 
     return version_to_display
+
+
+@toolkit.side_effect_free
+def package_search(context, data_dict):
+    """
+    Override to add urls that point to the web UI for each dagtaset
+    """
+    data = ckan_package_search(context, data_dict)
+
+    for result in data.get('results'):
+        # Add field with URL to the Api that points to the web UI for datasets
+        result['url'] = core_helpers.url_for(controller='package',
+                                             action='read',
+                                             id=result['name'],
+                                             qualified=True)
+
+    return data
 
 
 def _get_version_names_and_urls(all_active_versions, base_name):
