@@ -80,7 +80,7 @@ def package_show(context, data_dict):
 @toolkit.side_effect_free
 def package_search(context, data_dict):
     """
-    Override to add urls that point to the web UI for each dagtaset
+    Override to add urls that point to the web UI for each dataset
     """
     data = ckan_package_search(context, data_dict)
 
