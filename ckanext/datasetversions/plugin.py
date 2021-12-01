@@ -132,4 +132,5 @@ class DatasetversionsPlugin(plugins.SingletonPlugin):
         return {
             'datasetversions_list': helpers.list,
             'datasetversions_is_old': helpers.is_old,
+            'datasetversions_get_context': helpers.get_context,
         }
