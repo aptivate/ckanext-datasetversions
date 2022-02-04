@@ -43,7 +43,6 @@ def package_show(context, data_dict):
             dataset_type = DatasetType.unversioned
 
     # Do default CKAN authentication
-    context['ignore_auth'] = ignore_auth
     all_active_versions = _get_ordered_active_dataset_versions(
         get_context(context),
         data_dict.copy(),  # Will get modified so make a copy
@@ -55,6 +54,8 @@ def package_show(context, data_dict):
         version_to_display = all_active_versions[0]
 
     if dataset_type in (DatasetType.unversioned, DatasetType.specific_version):
+        # Do default CKAN authentication
+        context['ignore_auth'] = ignore_auth
         logic.check_access('package_show', get_context(context), data_dict)
 
     version_to_display['_versions'] = _get_version_names_and_urls(
