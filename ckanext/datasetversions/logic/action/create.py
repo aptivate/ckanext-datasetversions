@@ -13,6 +13,7 @@ def dataset_version_create(context, data_dict):
 
     parent_dict = {
         'name': parent_name,
+        'type': data_dict.get('type', 'dataset'),
         '__parent': True,
     }
 
