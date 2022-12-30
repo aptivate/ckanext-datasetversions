@@ -21,6 +21,8 @@ class DatasetversionsPlugin(plugins.SingletonPlugin):
             ckanext.datasetversions.logic.action.get.package_show,
             'dataset_version_create':
             ckanext.datasetversions.logic.action.create.dataset_version_create,
+            'package_search':
+            ckanext.datasetversions.logic.action.get.package_search
         }
 
     # IConfigurer
