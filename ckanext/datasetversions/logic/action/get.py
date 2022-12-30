@@ -50,6 +50,7 @@ def package_show(context, data_dict):
         else:
             dataset_type = DatasetType.unversioned
 
+    # Do default CKAN authentication
     all_active_versions = _get_ordered_active_dataset_versions(
         get_context(context),
         data_dict.copy(),  # Will get modified so make a copy
@@ -145,8 +146,11 @@ def _get_ordered_active_dataset_versions(context, data_dict, child_names):
 
     for name in child_names:
         data_dict['id'] = name
-        version = ckan_package_show(context, data_dict)
-        if version['state'] == 'active' and not version['private']:
+        try:
+            version = ckan_package_show(context, data_dict)
+        except logic.NotAuthorized:
+            continue
+        if version['state'] == 'active':
             versions.append(version)
 
     versions.sort(key=_get_version, reverse=True)
